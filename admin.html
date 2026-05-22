@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MFOCUS — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#fafaf8;--off:#f2f0eb;--black:#0e0e0e;--ink:#1a1a1a;
+  --mid:#888580;--light:#ccc9c2;--rule:rgba(0,0,0,0.09);
+  --accent:#c0392b;--success:#27ae60;--danger:#c0392b;
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:'Instrument Sans',sans-serif;background:var(--white);color:var(--ink);min-height:100vh;overflow-x:hidden}
+
+/* ── LOGIN ──────────────────────────────────────────── */
+#loginScreen{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:var(--off)}
+.login-card{width:360px;max-width:94vw;background:var(--white);border:1px solid var(--rule);padding:3rem 2.5rem;text-align:center}
+.login-logo{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;letter-spacing:0.07em;color:var(--black);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:0.25rem}
+.login-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.login-sub{font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--light);margin-bottom:2.5rem}
+.login-label{display:block;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mid);margin-bottom:6px;text-align:left}
+.login-input{width:100%;background:var(--off);border:1px solid var(--rule);border-radius:1px;padding:11px 14px;color:var(--ink);font-family:'Instrument Sans',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.18s;margin-bottom:1rem}
+.login-input:focus{border-color:var(--black)}
+.login-btn{width:100%;background:var(--black);color:var(--white);font-family:'Instrument Sans',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;padding:13px;border:none;border-radius:1px;cursor:pointer;transition:background 0.2s}
+.login-btn:hover{background:#2d2d2d}
+.login-err{font-size:0.65rem;color:var(--danger);letter-spacing:0.1em;margin-bottom:0.8rem;display:none;text-align:left}
+.login-err.show{display:block}
+
+/* ── HEADER ─────────────────────────────────────────── */
+header{position:fixed;top:0;left:0;right:0;z-index:100;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;background:rgba(250,250,248,0.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--rule)}
+.logo{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;letter-spacing:0.06em;color:var(--black);text-decoration:none;display:flex;align-items:center;gap:7px}
+.logo-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.logo-tag{font-family:'Instrument Sans',sans-serif;font-size:0.56rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--mid);padding:2px 7px;border:1px solid var(--rule);border-radius:1px}
+.hdr-right{display:flex;align-items:center;gap:0.8rem}
+.hbtn{font-family:'Instrument Sans',sans-serif;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;padding:6px 14px;border:1px solid var(--rule);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.18s;text-decoration:none;display:inline-block;border-radius:1px}
+.hbtn:hover{border-color:var(--black);color:var(--black)}
+
+/* ── TABS ────────────────────────────────────────────── */
+.tabs{position:fixed;top:56px;left:0;right:0;z-index:90;background:rgba(250,250,248,0.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule);display:flex;padding:0 2.5rem}
+.tab{font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;padding:13px 15px;cursor:pointer;color:var(--mid);border-bottom:2px solid transparent;transition:all 0.18s;margin-bottom:-1px}
+.tab:hover{color:var(--black)}
+.tab.on{color:var(--black);border-bottom-color:var(--black);font-weight:500}
+
+/* ── PANELS ──────────────────────────────────────────── */
+.panel{max-width:1100px;margin:0 auto;padding:138px 2.5rem 5rem;display:none}
+.panel.on{display:block}
+.sec-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:400;color:var(--black);margin-bottom:0.2rem}
+.sec-sub{font-size:0.63rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--mid);margin-bottom:2.2rem}
+
+/* ── NOTICE ──────────────────────────────────────────── */
+.notice{background:var(--off);border:1px solid var(--rule);border-radius:2px;padding:1rem 1.4rem;font-size:0.78rem;color:var(--mid);line-height:1.7;margin-bottom:1.6rem}
+.notice strong{color:var(--ink)}
+
+/* ── DROP ZONE ───────────────────────────────────────── */
+.drop{border:1.5px dashed var(--light);padding:3.5rem;text-align:center;cursor:pointer;transition:all 0.25s;background:var(--off);margin-bottom:2rem;border-radius:2px}
+.drop:hover,.drop.drag{border-color:var(--black);background:var(--white)}
+.drop-icon{font-size:2rem;opacity:0.15;margin-bottom:0.8rem}
+.drop h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--black);margin-bottom:0.4rem}
+.drop p{font-size:0.78rem;color:var(--mid)}
+#fi{display:none}
+
+/* ── QUEUE ───────────────────────────────────────────── */
+.queue{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px;margin-bottom:1.4rem}
+.qi{background:var(--off);border:1px solid var(--rule);border-radius:2px;overflow:hidden;position:relative}
+.qi img{width:100%;height:128px;object-fit:cover;display:block}
+.qi-body{padding:10px}
+.qi label{display:block;font-size:0.52rem;letter-spacing:0.17em;text-transform:uppercase;color:var(--mid);margin-bottom:4px}
+.qi input,.qi select{width:100%;background:var(--white);border:1px solid var(--rule);border-radius:1px;padding:7px 9px;color:var(--ink);font-family:'Instrument Sans',sans-serif;font-size:0.82rem;margin-bottom:6px;outline:none;transition:border-color 0.18s;appearance:none}
+.qi input:focus,.qi select:focus{border-color:var(--black)}
+.qi-rm{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);border:none;border-radius:1px;color:#fff;width:22px;height:22px;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.qi-rm:hover{background:var(--danger)}
+.qi-status{position:absolute;inset:0;background:rgba(250,250,248,0.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:6px}
+.qi-status.show{display:flex}
+.qi-status-txt{font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:2rem}
+.btn{font-family:'Instrument Sans',sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;padding:10px 22px;border:1px solid var(--rule);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.18s;border-radius:1px}
+.btn:hover{border-color:var(--black);color:var(--black)}
+.btn-black{background:var(--black);border-color:var(--black);color:var(--white)}
+.btn-black:hover{background:#2d2d2d;border-color:#2d2d2d;color:var(--white)}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn-red{border-color:rgba(192,57,43,0.25);color:var(--danger)}
+.btn-red:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+
+/* ── CATEGORIES ──────────────────────────────────────── */
+.cat-box{border:1px solid var(--rule);padding:1.8rem;border-radius:2px;margin-bottom:2rem}
+.cat-box h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--black);margin-bottom:0.4rem}
+.cat-box p{font-size:0.78rem;color:var(--mid);margin-bottom:1.2rem;line-height:1.65}
+.cat-add-row{display:flex;gap:8px;margin-bottom:1.2rem;flex-wrap:wrap}
+.cat-inp{font-family:'Instrument Sans',sans-serif;font-size:0.85rem;padding:9px 14px;border:1px solid var(--rule);background:var(--white);color:var(--ink);outline:none;border-radius:1px;transition:border-color 0.18s;flex:1;min-width:150px}
+.cat-inp:focus{border-color:var(--black)}
+.cat-tags{display:flex;flex-wrap:wrap;gap:8px}
+.cat-tag{display:flex;align-items:center;gap:8px;font-size:0.7rem;padding:7px 13px;border:1px solid var(--rule);background:var(--off);border-radius:1px;text-transform:capitalize}
+.cat-x{background:none;border:none;cursor:pointer;color:var(--light);font-size:0.8rem;line-height:1;padding:0;transition:color 0.15s}
+.cat-x:hover{color:var(--danger)}
+.cat-empty{font-size:0.72rem;color:var(--light);font-style:italic}
+
+/* ── MANAGE ──────────────────────────────────────────── */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.mc{background:var(--off);border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+.mc img{width:100%;height:145px;object-fit:cover;display:block}
+.mc-body{padding:10px}
+.mc-cat{font-size:0.52rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--mid);margin-bottom:3px}
+.mc-title{font-family:'Playfair Display',serif;font-style:italic;font-size:0.95rem;color:var(--black);margin-bottom:8px}
+.mc-del{font-family:'Instrument Sans',sans-serif;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(192,57,43,0.22);background:transparent;color:var(--danger);cursor:pointer;border-radius:1px;transition:all 0.18s}
+.mc-del:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+.empty-msg{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--light);padding:3rem;text-align:center;grid-column:1/-1}
+
+/* ── SETTINGS ────────────────────────────────────────── */
+.scard{border:1px solid var(--rule);padding:1.8rem;border-radius:2px;margin-bottom:1.2rem}
+.scard h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--black);margin-bottom:0.4rem}
+.scard p{font-size:0.78rem;color:var(--mid);margin-bottom:1rem;line-height:1.7}
+.scard label{display:block;font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--mid);margin-bottom:5px;margin-top:0.8rem}
+.scard input{width:100%;background:var(--off);border:1px solid var(--rule);border-radius:1px;padding:10px 13px;color:var(--ink);font-family:'Instrument Sans',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.18s;margin-bottom:0.5rem}
+.scard input:focus{border-color:var(--black)}
+.danger-zone{border-color:rgba(192,57,43,0.2)}
+.danger-zone h3{color:var(--danger)}
+
+/* ── PROGRESS ────────────────────────────────────────── */
+.prog{height:3px;background:var(--off);overflow:hidden;margin-bottom:1rem;display:none;border-radius:1px}
+.prog.on{display:block}
+.prog-bar{height:100%;background:var(--black);transition:width 0.25s}
+
+/* ── TOAST ───────────────────────────────────────────── */
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;padding:11px 20px;border-radius:1px;transform:translateY(50px);opacity:0;transition:all 0.25s;pointer-events:none;font-family:'Instrument Sans',sans-serif}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{background:var(--black);color:var(--white)}
+.toast.bad{background:var(--danger);color:#fff}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo"><span class="login-dot"></span>MFOCUS</div>
+    <div style="font-family:'Instrument Sans',sans-serif;font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--light);margin-bottom:2.5rem">Admin Panel</div>
+    <div class="login-err" id="loginErr">Wrong password. Try again.</div>
+    <label class="login-label" for="pwdInput">Password</label>
+    <input class="login-input" id="pwdInput" type="password" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">Enter Admin Panel</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header id="mainHeader" style="display:none">
+  <a class="logo" href="index.html"><span class="logo-dot"></span>MFOCUS <span class="logo-tag">Admin</span></a>
+  <div class="hdr-right">
+    <a class="hbtn" href="index.html" target="_blank">View Portfolio ↗</a>
+    <button class="hbtn" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="tabs" id="mainTabs" style="display:none">
+  <div class="tab on" onclick="showTab('upload',this)">Upload</div>
+  <div class="tab" onclick="showTab('cats',this)">Categories</div>
+  <div class="tab" onclick="showTab('manage',this)">Manage Photos</div>
+  <div class="tab" onclick="showTab('settings',this)">Settings</div>
+</div>
+
+<!-- UPLOAD -->
+<div class="panel on" id="tab-upload">
+  <div class="sec-title">Upload</div>
+  <div class="sec-sub">Add photographs to your portfolio</div>
+
+  <div class="notice">
+    <strong>Full quality storage.</strong> Photos are saved directly in your browser's IndexedDB — no compression, no size limit per photo. You can upload many photos at once. Make sure you always upload from your <strong>live deployed URL</strong> (not from a downloaded file on your computer), so visitors see them too.
+  </div>
+
+  <div class="drop" id="dz" onclick="document.getElementById('fi').click()">
+    <div class="drop-icon">⬆</div>
+    <h3>Drop photos here</h3>
+    <p>Click to browse &nbsp;·&nbsp; JPG, PNG, WEBP &nbsp;·&nbsp; Full quality &nbsp;·&nbsp; Unlimited photos</p>
+  </div>
+  <input type="file" id="fi" multiple accept="image/*"/>
+
+  <div class="queue" id="q"></div>
+  <div class="prog" id="pw"><div class="prog-bar" id="pb" style="width:0%"></div></div>
+  <div class="row" id="ua" style="display:none">
+    <button class="btn btn-black" id="upBtn" onclick="saveAll()">Save All to Portfolio</button>
+    <button class="btn" onclick="clearQ()">Clear Queue</button>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="panel" id="tab-cats">
+  <div class="sec-title">Categories</div>
+  <div class="sec-sub">Define the filter categories for your portfolio</div>
+  <div class="cat-box">
+    <h3>Your Categories</h3>
+    <p>These appear as filter tabs on your public portfolio. Add or remove them anytime.</p>
+    <div class="cat-add-row">
+      <input class="cat-inp" id="catInp" placeholder="e.g. Wedding, Street, Fashion, Nature…" onkeydown="if(event.key==='Enter')addCat()"/>
+      <button class="btn btn-black" onclick="addCat()">+ Add</button>
+    </div>
+    <div class="cat-tags" id="catTags"></div>
+  </div>
+</div>
+
+<!-- MANAGE -->
+<div class="panel" id="tab-manage">
+  <div class="sec-title">Manage Photos</div>
+  <div class="sec-sub">All photos currently in your portfolio</div>
+  <div class="mgrid" id="mg"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="panel" id="tab-settings">
+  <div class="sec-title">Settings</div>
+  <div class="sec-sub">Manage your admin password</div>
+
+  <div class="scard">
+    <h3>Change Password</h3>
+    <p>Update your admin password. You'll need the new one next time you log in.</p>
+    <label>Current Password</label>
+    <input type="password" id="curPwd" placeholder="Current password"/>
+    <label>New Password</label>
+    <input type="password" id="newPwd" placeholder="New password (min 6 characters)"/>
+    <label>Confirm New Password</label>
+    <input type="password" id="conPwd" placeholder="Confirm new password"/>
+    <div class="row" style="margin-top:0.8rem">
+      <button class="btn btn-black" onclick="changePwd()">Update Password</button>
+    </div>
+  </div>
+
+  <div class="scard danger-zone">
+    <h3>Delete All Photos</h3>
+    <p>Permanently remove all photos from the portfolio. This cannot be undone.</p>
+    <button class="btn btn-red" onclick="nukeAll()">Delete All Photos</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATABASE ────────────────────────────────────────────
+const DB_NAME = 'mfocus_db';
+const DB_VERSION = 1;
+const STORE_PHOTOS = 'photos';
+const STORE_CATS = 'categories';
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STORE_PHOTOS)) {
+        d.createObjectStore(STORE_PHOTOS, { keyPath: 'id' });
+      }
+      if (!d.objectStoreNames.contains(STORE_CATS)) {
+        d.createObjectStore(STORE_CATS, { keyPath: 'name' });
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbPut(storeName, value) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    const store = tx.objectStore(storeName);
+    const req = store.put(value);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGetAll(storeName) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readonly');
+    const store = tx.objectStore(storeName);
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbDelete(storeName, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    const store = tx.objectStore(storeName);
+    const req = store.delete(key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbClear(storeName) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    const store = tx.objectStore(storeName);
+    const req = store.clear();
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ── AUTH ──────────────────────────────────────────────────
+function getPwd() { return localStorage.getItem('mfocus_pwd') || 'mfocus2024'; }
+
+function doLogin() {
+  const val = document.getElementById('pwdInput').value;
+  if (val === getPwd()) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainHeader').style.display = 'flex';
+    document.getElementById('mainTabs').style.display = 'flex';
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').classList.add('show');
+    document.getElementById('pwdInput').value = '';
+    document.getElementById('pwdInput').focus();
+  }
+}
+document.addEventListener('keydown', e => {
+  if (document.getElementById('loginScreen').style.display !== 'none' && e.key === 'Enter') doLogin();
+});
+
+function logout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('mainHeader').style.display = 'none';
+  document.getElementById('mainTabs').style.display = 'none';
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('loginErr').classList.remove('show');
+}
+
+// ── INIT ──────────────────────────────────────────────────
+async function initAdmin() {
+  await openDB();
+  await loadCats();
+  renderCats();
+}
+
+// ── TABS ──────────────────────────────────────────────────
+function showTab(n, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('tab-' + n).classList.add('on');
+  el.classList.add('on');
+  if (n === 'manage') loadManage();
+  if (n === 'cats') renderCats();
+}
+
+// ── CATEGORIES ────────────────────────────────────────────
+let cats = [];
+
+async function loadCats() {
+  try {
+    const rows = await dbGetAll(STORE_CATS);
+    cats = rows.map(r => r.name);
+  } catch(e) {
+    // Fallback to localStorage if DB not ready
+    try { cats = JSON.parse(localStorage.getItem('mfocus_cats') || '[]'); } catch(e2) { cats = []; }
+  }
+}
+
+async function saveCat(name) {
+  await dbPut(STORE_CATS, { name });
+}
+
+async function deleteCat(name) {
+  await dbDelete(STORE_CATS, name);
+}
+
+function renderCats() {
+  const el = document.getElementById('catTags');
+  if (!el) return;
+  if (!cats.length) {
+    el.innerHTML = '<span class="cat-empty">No categories yet — type one above and click Add</span>';
+    return;
+  }
+  el.innerHTML = '';
+  cats.forEach((c, i) => {
+    const tag = document.createElement('div');
+    tag.className = 'cat-tag';
+    tag.innerHTML = `${c}<button class="cat-x" onclick="removeCat(${i})" title="Remove">×</button>`;
+    el.appendChild(tag);
+  });
+}
+
+async function addCat() {
+  const inp = document.getElementById('catInp');
+  const val = inp.value.trim();
+  if (!val) { toast('Type a category name first', 'bad'); return; }
+  if (cats.includes(val)) { toast('Already exists', 'bad'); return; }
+  cats.push(val);
+  await saveCat(val);
+  renderCats();
+  inp.value = '';
+  renderQ(); // refresh dropdowns in queue
+  toast('Category added ✓', 'ok');
+}
+
+async function removeCat(i) {
+  if (!confirm(`Remove "${cats[i]}"?`)) return;
+  const name = cats[i];
+  cats.splice(i, 1);
+  await deleteCat(name);
+  renderCats();
+  toast('Removed', 'ok');
+}
+
+// ── UPLOAD ────────────────────────────────────────────────
+let queue = [];
+
+const dz = document.getElementById('dz');
+const fi = document.getElementById('fi');
+
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag');
+  addQ(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
+});
+fi.addEventListener('change', () => { addQ(Array.from(fi.files)); fi.value = ''; });
+
+function addQ(files) {
+  files.forEach(f => {
+    const id = Date.now() + '_' + Math.random().toString(36).slice(2);
+    // Create a preview URL (just for the UI) — we keep the original File object
+    const previewURL = URL.createObjectURL(f);
+    queue.push({
+      id,
+      file: f,           // original File — will be stored as Blob
+      previewURL,
+      title: cleanName(f.name),
+      category: cats[0] || ''
+    });
+    renderQ();
+  });
+}
+
+function cleanName(n) {
+  return n.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function renderQ() {
+  const qEl = document.getElementById('q');
+  const ua  = document.getElementById('ua');
+  qEl.innerHTML = '';
+
+  if (!queue.length) { ua.style.display = 'none'; return; }
+  ua.style.display = 'flex';
+
+  const opts = cats.length
+    ? cats.map((c, ci) => `<option value="${c}" ${ci===0?'selected':''}>${c}</option>`).join('')
+    : '<option value="">Add categories first</option>';
+
+  queue.forEach((item, i) => {
+    const d = document.createElement('div');
+    d.className = 'qi';
+    d.id = 'qi_' + item.id;
+    d.innerHTML = `
+      <img src="${item.previewURL}" alt="">
+      <button class="qi-rm" onclick="rmQ(${i})">✕</button>
+      <div class="qi-body">
+        <label>Title</label>
+        <input type="text" value="${item.title}" onchange="queue[${i}].title=this.value">
+        <label>Category</label>
+        <select onchange="queue[${i}].category=this.value">${opts.replace(`value="${item.category}"`, `value="${item.category}" selected`)}</select>
+      </div>
+      <div class="qi-status" id="qs_${item.id}">
+        <div class="qi-status-txt" id="qst_${item.id}" style="color:var(--mid)">Waiting…</div>
+      </div>`;
+    qEl.appendChild(d);
+  });
+}
+
+function rmQ(i) {
+  URL.revokeObjectURL(queue[i].previewURL);
+  queue.splice(i, 1);
+  renderQ();
+}
+
+function clearQ() {
+  queue.forEach(item => URL.revokeObjectURL(item.previewURL));
+  queue = [];
+  renderQ();
+}
+
+async function saveAll() {
+  if (!queue.length) return;
+  if (!cats.length) { toast('Add at least one category first!', 'bad'); return; }
+
+  const btn = document.getElementById('upBtn');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+  document.getElementById('pw').classList.add('on');
+
+  let saved = 0;
+  let errors = 0;
+
+  for (let i = 0; i < queue.length; i++) {
+    const item = queue[i];
+    const pct = Math.round((i / queue.length) * 95);
+    document.getElementById('pb').style.width = pct + '%';
+
+    // Show "Saving…" overlay on this card
+    const statusEl = document.getElementById('qs_' + item.id);
+    const statusTxt = document.getElementById('qst_' + item.id);
+    if (statusEl) statusEl.classList.add('show');
+    if (statusTxt) statusTxt.textContent = 'Saving…';
+
+    try {
+      // Store the actual Blob (original file quality, any size)
+      const record = {
+        id: item.id,
+        blob: item.file,          // Raw file stored as Blob in IndexedDB — no compression
+        title: item.title || 'Untitled',
+        category: item.category || cats[0],
+        added: new Date().toISOString()
+      };
+
+      await dbPut(STORE_PHOTOS, record);
+      saved++;
+
+      if (statusTxt) { statusTxt.textContent = '✓ Saved'; statusTxt.style.color = 'var(--success)'; }
+    } catch(e) {
+      errors++;
+      if (statusTxt) { statusTxt.textContent = '✗ Error'; statusTxt.style.color = 'var(--danger)'; }
+      console.error('Failed to save photo:', item.title, e);
+    }
+  }
+
+  document.getElementById('pb').style.width = '100%';
+  await sleep(400);
+
+  queue = [];
+  renderQ();
+  btn.textContent = 'Save All to Portfolio';
+  btn.disabled = false;
+  document.getElementById('pw').classList.remove('on');
+  document.getElementById('pb').style.width = '0%';
+
+  if (errors === 0) {
+    toast(`${saved} photo${saved > 1 ? 's' : ''} saved ✓`, 'ok');
+  } else {
+    toast(`${saved} saved, ${errors} failed`, 'bad');
+  }
+}
+
+// ── MANAGE ────────────────────────────────────────────────
+const manageURLs = new Map();
+
+async function loadManage() {
+  // Revoke old URLs
+  manageURLs.forEach(url => URL.revokeObjectURL(url));
+  manageURLs.clear();
+
+  let photos = [];
+  try { photos = await dbGetAll(STORE_PHOTOS); } catch(e) { photos = []; }
+
+  const g = document.getElementById('mg');
+  g.innerHTML = '';
+
+  if (!photos.length) {
+    g.innerHTML = '<div class="empty-msg">No photos yet — go to Upload tab</div>';
+    return;
+  }
+
+  photos.sort((a, b) => new Date(a.added) - new Date(b.added));
+
+  photos.forEach(p => {
+    const src = p.blob ? URL.createObjectURL(p.blob) : (p.src || '');
+    if (p.blob) manageURLs.set(p.id, src);
+
+    const c = document.createElement('div');
+    c.className = 'mc';
+    c.innerHTML = `
+      <img src="${src}" alt="${p.title}" loading="lazy">
+      <div class="mc-body">
+        <div class="mc-cat">${p.category}</div>
+        <div class="mc-title">${p.title}</div>
+        <button class="mc-del" onclick="delPhoto('${p.id}')">Delete</button>
+      </div>`;
+    g.appendChild(c);
+  });
+}
+
+async function delPhoto(id) {
+  if (!confirm('Delete this photo?')) return;
+  try {
+    await dbDelete(STORE_PHOTOS, id);
+    toast('Deleted', 'ok');
+    loadManage();
+  } catch(e) {
+    toast('Error deleting photo', 'bad');
+  }
+}
+
+// ── SETTINGS ──────────────────────────────────────────────
+function changePwd() {
+  const cur = document.getElementById('curPwd').value;
+  const nw  = document.getElementById('newPwd').value;
+  const cn  = document.getElementById('conPwd').value;
+  if (cur !== getPwd()) { toast('Current password is wrong', 'bad'); return; }
+  if (nw.length < 6) { toast('Password too short (min 6 chars)', 'bad'); return; }
+  if (nw !== cn) { toast('Passwords do not match', 'bad'); return; }
+  localStorage.setItem('mfocus_pwd', nw);
+  document.getElementById('curPwd').value = '';
+  document.getElementById('newPwd').value = '';
+  document.getElementById('conPwd').value = '';
+  toast('Password updated ✓', 'ok');
+}
+
+async function nukeAll() {
+  if (!confirm('Delete ALL photos? This cannot be undone.')) return;
+  if (!confirm('Final confirmation: permanently delete all photos?')) return;
+  try {
+    await dbClear(STORE_PHOTOS);
+    toast('All photos deleted', 'ok');
+    loadManage();
+  } catch(e) {
+    toast('Error', 'bad');
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+let tt;
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  clearTimeout(tt);
+  tt = setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

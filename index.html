@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MFOCUS — Photography</title>
+<meta name="description" content="MFOCUS — Full quality photography portfolio."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#fafaf8;--off:#f2f0eb;--black:#0e0e0e;--ink:#1a1a1a;
+  --mid:#888580;--light:#ccc9c2;--rule:rgba(0,0,0,0.09);--accent:#c0392b;
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:'Instrument Sans',sans-serif;background:var(--white);color:var(--ink);min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;background:rgba(250,250,248,0.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--rule)}
+.logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;letter-spacing:0.06em;color:var(--black);text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.hdr-right{display:flex;align-items:center;gap:1rem}
+.hdr-meta{font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--light)}
+
+/* HERO */
+.hero{padding:96px 2.5rem 48px;max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:end;border-bottom:1px solid var(--rule)}
+@media(max-width:680px){.hero{grid-template-columns:1fr;padding-top:84px}}
+.hero-eyebrow{font-size:0.6rem;letter-spacing:0.36em;text-transform:uppercase;color:var(--mid);margin-bottom:1.4rem;display:flex;align-items:center;gap:10px;opacity:0;animation:up 0.6s 0.1s both}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--mid)}
+h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,7vw,6.5rem);font-weight:400;line-height:0.93;letter-spacing:-0.01em;color:var(--black);margin-bottom:1.6rem;opacity:0;animation:up 0.7s 0.22s both}
+h1 em{font-style:italic;color:var(--mid)}
+.hero-desc{font-size:0.88rem;color:var(--mid);font-weight:300;line-height:1.75;max-width:360px;opacity:0;animation:up 0.6s 0.36s both}
+.hero-stats{display:flex;flex-direction:column;gap:1.8rem;align-items:flex-end;opacity:0;animation:up 0.6s 0.46s both}
+@media(max-width:680px){.hero-stats{flex-direction:row;align-items:flex-start;margin-top:2rem}}
+.stat-num{font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:400;color:var(--black);line-height:1;display:block}
+.stat-lbl{font-size:0.58rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--light);display:block;margin-top:3px;text-align:right}
+@media(max-width:680px){.stat-lbl{text-align:left}}
+
+/* FILTERS */
+.filter-wrap{position:sticky;top:56px;z-index:100;background:rgba(250,250,248,0.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule);opacity:0;animation:up 0.5s 0.54s both;display:none}
+.filter-inner{max-width:1400px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none}
+.filter-inner::-webkit-scrollbar{display:none}
+.filter-lbl{font-size:0.58rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--light);padding:1rem 1.2rem 1rem 0;border-right:1px solid var(--rule);margin-right:1.2rem;white-space:nowrap;flex-shrink:0}
+.chip{font-family:'Instrument Sans',sans-serif;font-size:0.64rem;letter-spacing:0.1em;text-transform:uppercase;padding:1rem 1rem;border:none;background:transparent;color:var(--mid);cursor:pointer;transition:all 0.18s;white-space:nowrap;flex-shrink:0;border-bottom:2px solid transparent;margin-bottom:-1px}
+.chip:hover{color:var(--black)}
+.chip.on{color:var(--black);border-bottom-color:var(--black);font-weight:500}
+.chip .n{font-size:0.5rem;color:var(--light);margin-left:3px}
+.chip.on .n{color:var(--mid)}
+
+/* GALLERY */
+.gallery-wrap{max-width:1400px;margin:0 auto;padding:2.5rem}
+.masonry{columns:3;column-gap:14px}
+@media(max-width:1000px){.masonry{columns:2}}
+@media(max-width:560px){.masonry{columns:1}}
+.card{break-inside:avoid;margin-bottom:14px;position:relative;overflow:hidden;cursor:pointer;background:var(--off);opacity:0;animation:up 0.45s ease both}
+.card img{width:100%;display:block;transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94)}
+.card:hover img{transform:scale(1.04)}
+.card-info{position:absolute;bottom:0;left:0;right:0;padding:2rem 1.2rem 1.1rem;background:linear-gradient(to top,rgba(10,10,10,0.75),transparent);transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94)}
+.card:hover .card-info{transform:translateY(0)}
+.card-cat{font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:4px}
+.card-title{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:#fff}
+.card-idx{position:absolute;top:10px;left:10px;font-size:0.5rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:1px;opacity:0;transition:opacity 0.2s}
+.card:hover .card-idx{opacity:1}
+
+/* STATES */
+.state{max-width:1400px;margin:0 auto;padding:5rem 2.5rem;text-align:center}
+.state h3{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:400;color:var(--mid);margin-bottom:0.5rem}
+.state p{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--light)}
+
+/* LIGHTBOX */
+.lb{position:fixed;inset:0;z-index:9999;background:rgba(250,250,248,0.98);display:none;align-items:center;justify-content:center;backdrop-filter:blur(18px)}
+.lb.open{display:flex}
+.lb-inner{max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center}
+.lb-inner img{max-width:100%;max-height:82vh;object-fit:contain;box-shadow:0 12px 60px rgba(0,0,0,0.1)}
+.lb-meta{margin-top:1.1rem;display:flex;align-items:center;gap:1.4rem}
+.lb-cat{font-size:0.58rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--mid)}
+.lb-title{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--black)}
+.lb-close{position:fixed;top:1.4rem;right:1.4rem;font-family:'Instrument Sans',sans-serif;font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;padding:8px 16px;border:1px solid var(--light);background:var(--white);color:var(--mid);cursor:pointer;transition:all 0.2s;border-radius:1px}
+.lb-close:hover{border-color:var(--black);color:var(--black)}
+.lb-nav{position:fixed;top:50%;transform:translateY(-50%);font-size:1rem;padding:0.9rem 1.1rem;border:1px solid var(--rule);background:var(--white);color:var(--mid);cursor:pointer;transition:all 0.2s;border-radius:1px}
+.lb-nav:hover{border-color:var(--black);color:var(--black)}
+.lb-prev{left:1rem}.lb-next{right:1rem}
+.lb-count{position:fixed;bottom:1.8rem;left:50%;transform:translateX(-50%);font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--mid)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--rule);padding:1.4rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.8rem;max-width:1400px;margin:0 auto;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--light)}
+.f-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-right:6px;animation:blink 2.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html"><span class="logo-dot"></span>MFOCUS</a>
+  <div class="hdr-right">
+    <span class="hdr-meta" id="hMeta">Photography</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <div class="hero-eyebrow">Full Quality Photography</div>
+    <h1>Every<br/><em>frame</em><br/>matters.</h1>
+    <p class="hero-desc">A curated collection of photographs spanning every genre — captured and presented at full quality.</p>
+  </div>
+  <div class="hero-stats">
+    <div><span class="stat-num" id="totalCnt">—</span><span class="stat-lbl">Photographs</span></div>
+    <div><span class="stat-num" id="catCnt">—</span><span class="stat-lbl">Categories</span></div>
+  </div>
+</section>
+
+<div class="filter-wrap" id="filterWrap">
+  <div class="filter-inner">
+    <span class="filter-lbl">Browse</span>
+    <div id="chips"></div>
+  </div>
+</div>
+
+<div id="mainContent"></div>
+
+<div class="lb" id="lb">
+  <button class="lb-close" onclick="closeLb()">✕ Close</button>
+  <button class="lb-nav lb-prev" onclick="navLb(-1)">←</button>
+  <button class="lb-nav lb-next" onclick="navLb(1)">→</button>
+  <div class="lb-inner">
+    <img id="lbImg" src="" alt=""/>
+    <div class="lb-meta"><span class="lb-cat" id="lbCat"></span><span class="lb-title" id="lbTitle"></span></div>
+  </div>
+  <div class="lb-count" id="lbCount"></div>
+</div>
+
+<footer>
+  <span><span class="f-dot"></span>MFOCUS</span>
+  <span id="fYear"></span>
+  <span>Full Quality</span>
+</footer>
+
+<script>
+document.getElementById('fYear').textContent = '© ' + new Date().getFullYear();
+
+const DB_NAME = 'mfocus_db';
+const DB_VERSION = 1;
+const STORE_PHOTOS = 'photos';
+const STORE_CATS = 'categories';
+
+let db, all = [], filtered = [], lbIdx = 0;
+// objectURL cache so we don't recreate blobs repeatedly
+const urlCache = new Map();
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STORE_PHOTOS)) {
+        d.createObjectStore(STORE_PHOTOS, { keyPath: 'id' });
+      }
+      if (!d.objectStoreNames.contains(STORE_CATS)) {
+        d.createObjectStore(STORE_CATS, { keyPath: 'name' });
+      }
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getAllPhotos() {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_PHOTOS, 'readonly');
+    const store = tx.objectStore(STORE_PHOTOS);
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function blobToURL(photo) {
+  if (urlCache.has(photo.id)) return urlCache.get(photo.id);
+  if (photo.blob) {
+    const url = URL.createObjectURL(photo.blob);
+    urlCache.set(photo.id, url);
+    return url;
+  }
+  // Fallback: if stored as dataURL (legacy)
+  return photo.src || '';
+}
+
+async function load() {
+  try {
+    db = await openDB();
+    all = await getAllPhotos();
+    // Sort by date added (newest first if desired, or oldest first for consistent order)
+    all.sort((a, b) => new Date(a.added) - new Date(b.added));
+  } catch(e) {
+    all = [];
+  }
+
+  document.getElementById('totalCnt').textContent = all.length;
+  const cats = [...new Set(all.map(p => p.category))];
+  document.getElementById('catCnt').textContent = cats.size || cats.length;
+  document.getElementById('hMeta').textContent = cats.length ? cats.length + ' Categories' : 'Photography';
+
+  if (!all.length) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="state">
+        <h3>No photos yet</h3>
+        <p>Coming soon — check back later</p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('filterWrap').style.display = 'block';
+  buildChips();
+  applyFilter('all');
+}
+
+function buildChips() {
+  const cats = [...new Set(all.map(p => p.category))];
+  const wrap = document.getElementById('chips');
+  wrap.innerHTML = `<button class="chip on" onclick="applyFilter('all',this)">All <span class="n">${all.length}</span></button>`;
+  cats.forEach(cat => {
+    const n = all.filter(p => p.category === cat).length;
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.innerHTML = `${cat} <span class="n">${n}</span>`;
+    b.onclick = function() { applyFilter(cat, this); };
+    wrap.appendChild(b);
+  });
+}
+
+function applyFilter(cat, el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  (el || document.querySelector('.chip')).classList.add('on');
+  filtered = cat === 'all' ? [...all] : all.filter(p => p.category === cat);
+  renderGrid();
+}
+
+function renderGrid() {
+  const mc = document.getElementById('mainContent');
+  if (!filtered.length) {
+    mc.innerHTML = '<div class="state"><h3>No photos</h3><p>Nothing in this category yet</p></div>';
+    return;
+  }
+  const grid = document.createElement('div');
+  grid.className = 'gallery-wrap';
+  const masonry = document.createElement('div');
+  masonry.className = 'masonry';
+
+  filtered.forEach((p, i) => {
+    const src = blobToURL(p);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = Math.min(i * 0.04, 0.6) + 's';
+    card.innerHTML = `
+      <span class="card-idx">${String(i+1).padStart(2,'0')}</span>
+      <img src="${src}" alt="${p.title}" loading="lazy"/>
+      <div class="card-info">
+        <div class="card-cat">${p.category}</div>
+        <div class="card-title">${p.title}</div>
+      </div>`;
+    card.onclick = () => openLb(i);
+    masonry.appendChild(card);
+  });
+  grid.appendChild(masonry);
+  mc.innerHTML = '';
+  mc.appendChild(grid);
+}
+
+function openLb(i) {
+  lbIdx = i;
+  const p = filtered[i];
+  document.getElementById('lbImg').src = blobToURL(p);
+  document.getElementById('lbCat').textContent = p.category;
+  document.getElementById('lbTitle').textContent = p.title;
+  document.getElementById('lbCount').textContent = (i+1) + ' / ' + filtered.length;
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function navLb(d) {
+  lbIdx = (lbIdx + d + filtered.length) % filtered.length;
+  openLb(lbIdx);
+}
+function closeLb() {
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lb').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLb();
+  if (e.key === 'ArrowLeft') navLb(-1);
+  if (e.key === 'ArrowRight') navLb(1);
+});
+
+load();
+</script>
+</body>
+</html>
